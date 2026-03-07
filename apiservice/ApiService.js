@@ -3,6 +3,27 @@ import axios from "axios";
 const API_URL = "http://localhost:8080/api/";
 
 const apiService = {
+        // ---------- ADMINS ----------
+
+    getAllAdmins: () => {
+        return axios.get(`${API_URL}admins`).then((response) => response.data);
+    },
+
+    getAdminById: (adminId) => {
+        return axios.get(`${API_URL}admins/${adminId}`).then((response) => response.data);
+    },
+
+    createAdmin: (admin) => {
+        return axios.post(`${API_URL}admins`, admin).then((response) => response.data);
+    },
+
+    updateAdmin: (adminId, admin) => {
+        return axios.put(`${API_URL}admins/${adminId}`, admin).then((response) => response.data);
+    },
+
+    deleteAdmin: (adminId) => {
+        return axios.delete(`${API_URL}admins/${adminId}`).then((response) => response.data);
+    },
 
     // ---------- TICKETS ----------
 
@@ -26,6 +47,13 @@ const apiService = {
         return axios.delete(`${API_URL}tickets/${ticketId}`).then((response) => response.data);
     },
 
+
+    // ---------- AUTH ----------
+
+    login: (authData) => {
+        return axios.post(`${API_URL}auth/login`, authData)
+            .then((response) => response.data);
+    },
 
     // ---------- TICKET GROUP ----------
 
@@ -93,7 +121,53 @@ const apiService = {
 
     deleteUserById: (userId) => {
         return axios.delete(`${API_URL}users/${userId}`).then((response) => response.data);
-    }
+    },
+
+
+  // ---------- TICKET HANDLERS ----------
+
+    getAllTicketHandlers: () => {
+        return axios.get(`${API_URL}tickethandlers`).then((response) => response.data);
+    },
+
+    getTicketHandlerById: (handlerId) => {
+        return axios.get(`${API_URL}tickethandlers/${handlerId}`).then((response) => response.data);
+    },
+
+    createTicketHandler: (handler) => {
+        return axios.post(`${API_URL}tickethandlers`, handler).then((response) => response.data);
+    },
+
+    updateTicketHandler: (handlerId, handler) => {
+        return axios.put(`${API_URL}tickethandlers/${handlerId}`, handler).then((response) => response.data);
+    },
+
+    deleteTicketHandlerById: (handlerId) => {
+        return axios.delete(`${API_URL}tickethandlers/${handlerId}`).then((response) => response.data);
+    },
+
+
+    // ---------- TICKET MANAGERS ----------
+
+getAllTicketManagers: () => {
+    return axios.get(`${API_URL}ticketmanagers`).then((response) => response.data);
+},
+
+getTicketManagerById: (managerId) => {
+    return axios.get(`${API_URL}ticketmanagers/${managerId}`).then((response) => response.data);
+},
+
+createTicketManager: (manager) => {
+    return axios.post(`${API_URL}ticketmanagers`, manager).then((response) => response.data);
+},
+
+updateTicketManager: (managerId, manager) => {
+    return axios.put(`${API_URL}ticketmanagers/${managerId}`, manager).then((response) => response.data);
+},
+
+deleteTicketManager: (managerId) => {
+    return axios.delete(`${API_URL}ticketmanagers/${managerId}`).then((response) => response.data);
+},
 
 };
 
