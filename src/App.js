@@ -1,48 +1,35 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Auth from "./authentication/Auth.js";
+import Ticket from "./ticketcomponents/Ticket.js";
+import TicketAdd from "./ticketcomponents/TicketAdd.js";
+import TicketUpdate from "./ticketcomponents/TicketUpdate.js";
+import TicketDelete from "./ticketcomponents/TicketDelete.js";
+import UserList from "./usercomponents/UserList.js";
+import User from "./usercomponents/User.js";
+import UserAdd from "./usercomponents/UserAdd.js";
+import UserUpdate from "./usercomponents/UserUpdate.js";
+import UserDelete from "./usercomponents/UserDelete.js";
+import SpaceList from "./spacecomponents/SpaceList.js";
+import Space from "./spacecomponents/Space.js";
+import SpaceAdd from "./spacecomponents/SpaceAdd.js";
+import SpaceUpdate from "./spacecomponents/SpaceUpdate.js";
+import SpaceDelete from "./spacecomponents/SpaceDelete.js";
+import TicketGroupList from "./ticketgroupcomponents/TicketGroupList.js";
+import TicketGroup from "./ticketgroupcomponents/TicketGroup.js";
+import TicketGroupAdd from "./ticketgroupcomponents/TicketGroupAdd.js";
+import TicketGroupUpdate from "./ticketgroupcomponents/TicketGroupUpdate.js";
+import TicketGroupDelete from "./ticketgroupcomponents/TicketGroupDelete.js";
+import TicketHandlerList from "./tickethandlercomponents/TicketHandlerList.js";
+import TicketHandler from "./tickethandlercomponents/TicketHandler.js";
+import TicketHandlerAdd from "./tickethandlercomponents/TicketHandlerAdd.js";
+import TicketHandlerUpdate from "./tickethandlercomponents/TicketHandlerUpdate.js";
+import TicketHandlerDelete from "./tickethandlercomponents/TicketHandlerDelete.js";
+import TicketManagerList from "./ticketmanagercomponents/TicketManagerList.js";
+import TicketManager from "./ticketmanagercomponents/TicketManager.js";
+import TicketManagerAdd from "./ticketmanagercomponents/TicketManagerAdd.js";
+import TicketManagerUpdate from "./ticketmanagercomponents/TicketManagerUpdate.js";
+import TicketManagerDelete from "./ticketmanagercomponents/TicketManagerDelete.js";
 
-// ---------- TICKETS ----------
-import Ticket from "./components/Ticket";
-import TicketAdd from "./components/TicketAdd";
-import TicketUpdate from "./components/TicketUpdate";
-import TicketDelete from "./components/TicketDelete";
-
-// ---------- USERS ----------
-import User from "./components/User";
-import UserAdd from "./components/UserAdd";
-import UserUpdate from "./components/UserUpdate";
-import UserDelete from "./components/UserDelete";
-import UserList from "./components/UserList";
-
-// ---------- SPACES ----------
-import Space from "./components/Space";
-import SpaceAdd from "./components/SpaceAdd";
-import SpaceUpdate from "./components/SpaceUpdate";
-import SpaceDelete from "./components/SpaceDelete";
-import SpaceList from "./components/SpaceList";
-
-// ---------- TICKET GROUPS ----------
-import TicketGroup from "./components/TicketGroup";
-import TicketGroupAdd from "./components/TicketGroupAdd";
-import TicketGroupUpdate from "./components/TicketGroupUpdate";
-import TicketGroupDelete from "./components/TicketGroupDelete";
-import TicketGroupList from "./components/TicketGroupList";
-
-// ---------- TICKET HANDLERS ----------
-import TicketHandler from "./components/TicketHandler";
-import TicketHandlerAdd from "./components/TicketHandlerAdd";
-import TicketHandlerUpdate from "./components/TicketHandlerUpdate";
-import TicketHandlerDelete from "./components/TicketHandlerDelete";
-import TicketHandlerList from "./components/TicketHandlerList";
-
-// ---------- TICKET MANAGERS ----------
-import TicketManager from "./components/TicketManager";
-import TicketManagerAdd from "./components/TicketManagerAdd";
-import TicketManagerUpdate from "./components/TicketManagerUpdate";
-import TicketManagerDelete from "./components/TicketManagerDelete";
-import TicketManagerList from "./components/TicketManagerList";
-
-// ---------- AUTH ----------
-import Auth from "./components/Auth";
 
 function App() {
     return (
