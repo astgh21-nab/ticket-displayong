@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiService from "../services/apiService";
+import apiService from "../apiservice/apiService";
 
 function Ticket() {
 
     const [tickets, setTickets] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        getAllTickets();
-    }, []);
-
-    const getAllTickets = () => {
-       apiService.getAllTickets().then((data) => {
-        setTickets(data);
+    // Function declaration (hoisted)
+    function getAllTickets() {
+        apiService.getAllTickets().then((data) => {
+            setTickets(data);
         });
-    };
+    }
+
+    useEffect(() => {
+        getAllTickets(); // Safe to call here
+    }, []);
 
     const goToAddTicket = () => {
         navigate("/add-ticket");
@@ -23,7 +24,6 @@ function Ticket() {
 
     return (
         <div>
-
             <h2>Tickets</h2>
 
             <button onClick={goToAddTicket}>
@@ -35,25 +35,23 @@ function Ticket() {
 
             <table border="1">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                </tr>
                 </thead>
 
                 <tbody>
-                    {tickets.map((ticket) => (
-                        <tr key={ticket.id}>
-                            <td>{ticket.id}</td>
-                            <td>{ticket.title}</td>
-                            <td>{ticket.description}</td>
-                        </tr>
-                    ))}
+                {tickets.map((ticket) => (
+                    <tr key={ticket.id}>
+                        <td>{ticket.id}</td>
+                        <td>{ticket.title}</td>
+                        <td>{ticket.description}</td>
+                    </tr>
+                ))}
                 </tbody>
-
             </table>
-
         </div>
     );
 }

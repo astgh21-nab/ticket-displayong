@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import apiService from "../services/apiService";
+import apiService from "../apiservice/apiService";
 
-function TicketManagerUpdate() {
+function AdminUpdate() {
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -12,22 +12,22 @@ function TicketManagerUpdate() {
 
     useEffect(() => {
 
-        apiService.getTicketManagerById(id).then(manager => {
-            setName(manager.name);
-            setEmail(manager.email);
+        apiService.getAdminById(id).then(admin => {
+            setName(admin.name);
+            setEmail(admin.email);
         });
 
     }, [id]);
 
-    const updateTicketManager = () => {
+    const updateAdmin = () => {
 
-        const ticketManager = {
+        const admin = {
             name: name,
             email: email
         };
 
-        apiService.updateTicketManager(id, ticketManager).then(() => {
-            navigate("/ticketmanagers");
+        apiService.updateAdmin(id, admin).then(() => {
+            navigate("/admins");
         });
 
     };
@@ -35,7 +35,7 @@ function TicketManagerUpdate() {
     return (
         <div>
 
-            <h2>Update Ticket Manager</h2>
+            <h2>Update Admin</h2>
 
             <input
                 value={name}
@@ -51,7 +51,7 @@ function TicketManagerUpdate() {
 
             <br/>
 
-            <button onClick={updateTicketManager}>
+            <button onClick={updateAdmin}>
                 Update
             </button>
 
@@ -59,4 +59,4 @@ function TicketManagerUpdate() {
     );
 }
 
-export default TicketManagerUpdate;
+export default AdminUpdate;

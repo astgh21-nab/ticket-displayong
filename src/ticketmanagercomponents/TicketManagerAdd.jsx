@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiService from "../services/apiService";
+import apiService from "../apiservice/apiService";
 
-function TicketHandlerAdd() {
+function TicketManagerAdd() {
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
 
     const navigate = useNavigate();
 
-    const addTicketHandler = () => {
+    const addTicketManager = () => {
 
-        const ticketHandler = {
+        const ticketManager = {
             name: name,
             email: email
         };
 
-        apiService.createTicketHandler(ticketHandler).then(() => {
-            navigate("/tickethandlers");
+        apiService.createTicketManager(ticketManager).then(() => {
+            navigate("/ticketmanagers");
         });
 
     };
@@ -25,7 +25,7 @@ function TicketHandlerAdd() {
     return (
         <div>
 
-            <h2>Add Ticket Handler</h2>
+            <h2>Add Ticket Manager</h2>
 
             <input
                 placeholder="Name"
@@ -43,7 +43,7 @@ function TicketHandlerAdd() {
 
             <br/>
 
-            <button onClick={addTicketHandler}>
+            <button onClick={addTicketManager}>
                 Create
             </button>
 
@@ -51,4 +51,4 @@ function TicketHandlerAdd() {
     );
 }
 
-export default TicketHandlerAdd;
+export default TicketManagerAdd;

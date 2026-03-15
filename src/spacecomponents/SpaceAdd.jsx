@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiService from "../services/apiService";
+import apiService from "../apiservice/apiService";
 
-function AdminAdd() {
+function SpaceAdd() {
 
     const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const [location, setLocation] = useState("");
 
     const navigate = useNavigate();
 
-    const addAdmin = () => {
+    const addSpace = () => {
 
-        const admin = {
+        const space = {
             name: name,
-            email: email
+            location: location
         };
 
-        apiService.createAdmin(admin).then(() => {
-            navigate("/admins");
+        apiService.createSpace(space).then(() => {
+            navigate("/spaces");
         });
 
     };
@@ -25,7 +25,7 @@ function AdminAdd() {
     return (
         <div>
 
-            <h2>Add Admin</h2>
+            <h2>Add Space</h2>
 
             <input
                 placeholder="Name"
@@ -36,14 +36,14 @@ function AdminAdd() {
             <br/>
 
             <input
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
             />
 
             <br/>
 
-            <button onClick={addAdmin}>
+            <button onClick={addSpace}>
                 Create
             </button>
 
@@ -51,4 +51,4 @@ function AdminAdd() {
     );
 }
 
-export default AdminAdd;
+export default SpaceAdd;

@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiService from "../services/apiService";
+import apiService from "../apiservice/apiService";
 
-function UserAdd() {
+function AdminAdd() {
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
 
     const navigate = useNavigate();
 
-    const addUser = () => {
+    const addAdmin = () => {
 
-        const user = {
+        const admin = {
             name: name,
             email: email
         };
 
-        apiService.createUser(user).then(() => {
-            navigate("/users");
+        apiService.createAdmin(admin).then(() => {
+            navigate("/admins");
         });
 
     };
@@ -25,7 +25,7 @@ function UserAdd() {
     return (
         <div>
 
-            <h2>Add User</h2>
+            <h2>Add Admin</h2>
 
             <input
                 placeholder="Name"
@@ -43,7 +43,7 @@ function UserAdd() {
 
             <br/>
 
-            <button onClick={addUser}>
+            <button onClick={addAdmin}>
                 Create
             </button>
 
@@ -51,4 +51,4 @@ function UserAdd() {
     );
 }
 
-export default UserAdd;
+export default AdminAdd;
