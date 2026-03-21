@@ -76,7 +76,7 @@ function App() {
 
                 {/* TICKET MANAGERS */}
                 <Route path="/ticketmanagers" element={<TicketManagerList />} />
-                <Route path="/ticketmanager" element={<TicketManager />} />
+                <Route path="/ticketmanager/:id" element={<TicketManager />} />
                 <Route path="/add-ticketmanager" element={<TicketManagerAdd />} />
                 <Route path="/update-ticketmanager/:id" element={<TicketManagerUpdate />} />
                 <Route path="/delete-ticketmanager/:id" element={<TicketManagerDelete />} />

@@ -25,8 +25,8 @@ function Auth() {
 
         try {
             const data = await apiService.login({ username, password });
-            data.role === "ADMIN" ? navigate("/users") : data.role === "THICKET_MANAGER" ? navigate("/ticketmanagers") : navigate("/tickethandlers");
-
+            console.log("Login successful, user data:",  data.role);
+            data.role === "ADMIN" ? navigate("/users") : data.role === "TICKET_MANAGER" ? navigate(`/ticketmanager/${data.id}`) : navigate(`/tickethandler/${data.id}`);
         } catch (err) {
             console.error("Login error:", err);
             setError(err.response?.data?.message || "Login failed");

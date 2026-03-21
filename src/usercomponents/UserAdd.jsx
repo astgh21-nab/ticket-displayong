@@ -1,22 +1,23 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import apiService from "../apiservice/apiService";
 
 function UserAdd() {
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-
     const navigate = useNavigate();
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const [userRole, setUserRole] = useState("");
 
-    const addUser = () => {
+    const updateUser = () => {
 
         const user = {
-            name: name,
-            email: email
+            username: username,
+            password: password,
+            userRole: userRole
         };
 
-        apiService.createUser(user).then(() => {
+        apiService.createUser( user).then(() => {
             navigate("/users");
         });
 
@@ -28,26 +29,27 @@ function UserAdd() {
             <h2>Add User</h2>
 
             <input
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setUserName(e.target.value)}
             />
-
-            <br/>
-
             <input
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
             />
+
+            <select onChange={(e) => setUserRole(e.target.value)}>
+                <option value="">Select Role</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="TICKET_MANAGER">TICKET_MANAGER</option>
+                <option value="TICKET_HANDLER">TICKET_HANDLER</option>
+            </select>
 
             <br/>
 
-            <button onClick={addUser}>
-                Create
+            <button onClick={updateUser}>
+                Add
             </button>
 
         </div>
+
     );
 }
 

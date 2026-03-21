@@ -7,14 +7,14 @@ function UserUpdate() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const [userRole, setUserRole] = useState("");
 
     useEffect(() => {
 
         apiService.getUserById(id).then(user => {
-            setName(user.name);
-            setEmail(user.email);
+            setUserName(user.username);
         });
 
     }, [id]);
@@ -22,8 +22,9 @@ function UserUpdate() {
     const updateUser = () => {
 
         const user = {
-            name: name,
-            email: email
+            username: username,
+            password: password,
+            userRole: userRole
         };
 
         apiService.updateUser(id, user).then(() => {
@@ -38,16 +39,18 @@ function UserUpdate() {
             <h2>Update User</h2>
 
             <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setUserName(e.target.value)}
             />
-
-            <br/>
-
             <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
             />
+
+                <select onChange={(e) => setUserRole(e.target.value)}>
+                    <option value="">Select Role</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="TICKET_MANAGER">TICKET_MANAGER</option>
+                    <option value="TICKET_HANDLER">TICKET_HANDLER</option>
+                </select>
 
             <br/>
 
@@ -56,6 +59,7 @@ function UserUpdate() {
             </button>
 
         </div>
+
     );
 }
 
