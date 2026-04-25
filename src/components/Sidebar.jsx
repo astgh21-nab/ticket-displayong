@@ -1,8 +1,10 @@
+
 import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, CheckSquare, FolderOpen } from "lucide-react";
 
+
 const NAV_ITEMS = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/tickets", label: "Tickets", icon: CheckSquare },
   { path: "/projects", label: "Projects", icon: FolderOpen },
 ];
@@ -36,3 +38,4 @@ export default function Sidebar() {
     </aside>
   );
 }
+  

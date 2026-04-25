@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./authentication/Auth.jsx";
 import Ticket from "./ticketcomponents/TicketList.jsx";
 import TicketAdd from "./ticketcomponents/TicketAdd.jsx";
@@ -30,18 +30,28 @@ import TicketManagerAdd from "./ticketmanagercomponents/TicketManagerAdd.jsx";
 import TicketManagerUpdate from "./ticketmanagercomponents/TicketManagerUpdate.jsx";
 import TicketManagerDelete from "./ticketmanagercomponents/TicketManagerDelete.jsx";
 
+// Pages
+import Dashboard from "./pages/Dashboard.jsx";
+import Tickets from "./pages/Tickets.jsx";
+import Projects from "./pages/Projects.jsx";
 
 function App() {
     return (
         <BrowserRouter>
-
             <Routes>
-
-                {/* AUTH */}
+                {/* AUTH - Login is now the first page */}
                 <Route path="/login" element={<Auth />} />
+                
+                {/* Redirect from root (/) to /login */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
 
-                {/* TICKETS */}
-                <Route path="/tickets" element={<Ticket />} />
+                {/* MAIN PAGES (protected routes) */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/tickets" element={<Tickets />} />
+                <Route path="/projects" element={<Projects />} />
+
+                {/* TICKETS CRUD */}
+                <Route path="/tickets-list" element={<Ticket />} />
                 <Route path="/add-ticket" element={<TicketAdd />} />
                 <Route path="/update-ticket/:id" element={<TicketUpdate />} />
                 <Route path="/delete-ticket/:id" element={<TicketDelete />} />
@@ -80,9 +90,7 @@ function App() {
                 <Route path="/add-ticketmanager" element={<TicketManagerAdd />} />
                 <Route path="/update-ticketmanager/:id" element={<TicketManagerUpdate />} />
                 <Route path="/delete-ticketmanager/:id" element={<TicketManagerDelete />} />
-
             </Routes>
-
         </BrowserRouter>
     );
 }

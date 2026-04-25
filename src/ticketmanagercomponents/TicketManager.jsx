@@ -4,7 +4,7 @@ import apiService from "../apiservice/apiService";
 import "./dashboard.css";
 
 const NAV_ITEMS = [
-  { path: "/", label: "Dashboard", icon: "⊞" },
+  { path: "/dashboard", label: "Dashboard", icon: "⊞" },  // ✅ ՓՈԽՎԵԼ Է
   { path: "/tickets", label: "Tickets", icon: "◈" },
   { path: "/projects", label: "Projects", icon: "◉" },
 ];
@@ -32,7 +32,7 @@ export default function TicketManager() {
   const navigate = useNavigate();
   const [activeTicket, setActiveTicket] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [view, setView] = useState("create"); // "create" | "list"
+  const [view, setView] = useState("create");
   const [submittedTickets, setSubmittedTickets] = useState([
     { id: "TKT-001", type: "User Access", summary: "New hire onboarding access", status: "Open", date: "2025-03-20" },
     { id: "TKT-002", type: "Incident", summary: "Production server down", status: "In Progress", date: "2025-03-22" },
@@ -179,7 +179,6 @@ export default function TicketManager() {
 
   return (
     <div className="dashboard-container">
-      {/* ── Sidebar ── */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <span className="sidebar-logo">A</span>
@@ -220,18 +219,15 @@ export default function TicketManager() {
         </div>
 
         <div className="sidebar-footer">
-          <div className="sidebar-avatar">JD</div>
+          <div className="sidebar-avatar">AN</div>
           <div>
-            <p className="sidebar-user-name">John Doe</p>
+            <p className="sidebar-user-name">Astghik Naboyan</p>
             <p className="sidebar-user-role">Admin</p>
           </div>
         </div>
       </aside>
 
-      {/* ── Main Content ── */}
       <div className="main-content">
-
-        {/* ── CREATE VIEW ── */}
         {view === "create" && !activeTicket && (
           <>
             <div className="topbar">
@@ -259,7 +255,6 @@ export default function TicketManager() {
           </>
         )}
 
-        {/* ── FORM VIEW ── */}
         {view === "create" && activeTicket && (
           <div className="form-container">
             <span className="back-btn" onClick={() => setActiveTicket(null)}>← Back</span>
@@ -271,7 +266,6 @@ export default function TicketManager() {
           </div>
         )}
 
-        {/* ── LIST VIEW ── */}
         {view === "list" && (
           <div className="ticket-list-view">
             <div className="list-header">
@@ -311,10 +305,7 @@ export default function TicketManager() {
                         <td className="ticket-summary">{ticket.summary}</td>
                         <td className="ticket-date">{ticket.date}</td>
                         <td>
-                          <span
-                            className="status-badge"
-                            style={{ background: sc.bg, color: sc.color }}
-                          >
+                          <span className="status-badge" style={{ background: sc.bg, color: sc.color }}>
                             <span className="status-dot" style={{ background: sc.dot }} />
                             {ticket.status}
                           </span>
