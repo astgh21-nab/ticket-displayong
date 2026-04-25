@@ -45,10 +45,17 @@ function Auth() {
                 localStorage.removeItem("rememberedUsername");
             }
             
+            // Store user data in localStorage for later use
+            localStorage.setItem("userRole", data.role);
+            localStorage.setItem("userId", data.id);
+            
             if (data.role === "ADMIN") {
                 navigate("/users");
             } else if (data.role === "TICKET_MANAGER") {
                 navigate(`/ticketmanager/${data.id}`);
+            } else if (data.role === "TICKET_HANDLER") {
+                // Changed: navigate to /tickethandler without ID
+                navigate("/tickethandler");
             } else {
                 navigate(`/tickethandler/${data.id}`);
             }

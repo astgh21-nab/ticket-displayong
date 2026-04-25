@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../apiservice/apiService";
+import { LogOut } from "lucide-react";
 import "./dashboard.css";
 
 const NAV_ITEMS = [
-  { path: "/dashboard", label: "Dashboard", icon: "⊞" },  // ✅ ՓՈԽՎԵԼ Է
+  { path: "/dashboard", label: "Dashboard", icon: "⊞" },
   { path: "/tickets", label: "Tickets", icon: "◈" },
   { path: "/projects", label: "Projects", icon: "◉" },
 ];
@@ -40,6 +41,17 @@ export default function TicketManager() {
     { id: "TKT-004", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27" },
   ]);
   const [statusFilter, setStatusFilter] = useState("All");
+
+  const handleLogout = () => {
+    // Clear any stored authentication data
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("rememberedUsername");
+    sessionStorage.clear();
+    
+    // Navigate to login page
+    navigate("/login");
+  };
 
   const handleSubmit = async (e, type) => {
     e.preventDefault();
@@ -220,10 +232,44 @@ export default function TicketManager() {
 
         <div className="sidebar-footer">
           <div className="sidebar-avatar">AN</div>
-          <div>
+          <div style={{ flex: 1 }}>
             <p className="sidebar-user-name">Astghik Naboyan</p>
             <p className="sidebar-user-role">Admin</p>
           </div>
+          {/* Sign Out Button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              padding: "8px 12px",
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+              borderRadius: "10px",
+              color: "#ef4444",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "500",
+              transition: "all 0.2s ease",
+              width: "100%",
+              marginTop: "8px"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "#ef4444";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.borderColor = "#ef4444";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
+              e.currentTarget.style.color = "#ef4444";
+              e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
+            }}
+          >
+            <LogOut size={14} />
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
 

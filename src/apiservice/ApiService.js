@@ -147,6 +147,15 @@ const apiService = {
     },
 
 
+    // apiService.js
+getTicketsByHandler: () => axios.get(`${API_BASE}/tickets/handler`),
+getAllTicketHandlers: () => axios.get(`${API_BASE}/ticket-handlers`),
+getTicketHandlerById: (id) => axios.get(`${API_BASE}/ticket-handlers/${id}`),
+createTicketHandler: (data) => axios.post(`${API_BASE}/ticket-handlers`, data),
+updateTicketHandler: (id, data) => axios.put(`${API_BASE}/ticket-handlers/${id}`, data),
+deleteTicketHandler: (id) => axios.delete(`${API_BASE}/ticket-handlers/${id}`),
+updateTicketStatus: (id, data) => axios.put(`${API_BASE}/tickets/${id}/status`, data),
+
     // ---------- TICKET MANAGERS ----------
 
 getAllTicketManagers: () => {
