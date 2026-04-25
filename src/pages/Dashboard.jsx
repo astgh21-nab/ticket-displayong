@@ -65,7 +65,7 @@ export default function Dashboard() {
     avgResponseTime: "2.4h",
     avgResolutionTime: "18.5h",
     satisfaction: "94%",
-    slaCompliance: "97%",
+    slaCompliance: "97",
     reopened: 8,
     escalated: 5,
     monthlyGrowth: "+18%",
