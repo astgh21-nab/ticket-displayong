@@ -35,6 +35,11 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Tickets from "./pages/Tickets.jsx";
 import Projects from "./pages/Projects.jsx";
 
+import HandlerDashboard from "./pages/HandlerDashboard.jsx";
+import HandlerTickets from "./pages/HandlerTickets.jsx";
+import HandlerProjects from "./pages/HandlerProjects.jsx";
+import AssignedTickets from "./pages/AssignedTickets.jsx";
+
 function App() {
     return (
         <BrowserRouter>
@@ -49,6 +54,14 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tickets" element={<Tickets />} />
                 <Route path="/projects" element={<Projects />} />
+
+                                {/* TICKET HANDLER ROUTES */}
+                <Route path="/tickethandler/dashboard" element={<HandlerDashboard />} />
+                <Route path="/tickethandler/tickets" element={<HandlerTickets />} />
+                <Route path="/tickethandler/projects" element={<HandlerProjects />} />
+
+                            // Routes-ում ավելացրեք
+                    <Route path="/tickethandler/assigned" element={<AssignedTickets />} />
 
                 {/* TICKETS CRUD */}
                 <Route path="/tickets-list" element={<Ticket />} />

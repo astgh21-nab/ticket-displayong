@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../apiservice/apiService";
 import { LogOut } from "lucide-react";
 
 
 const NAV_ITEMS = [
-  { path: "/dashboard", label: "Dashboard", icon: "⊞" },
-  { path: "/tickets", label: "Tickets", icon: "◈" },
-  { path: "/projects", label: "Projects", icon: "◉" },
+  { path: "/tickethandler/dashboard", label: "Dashboard", icon: "⊞" },
+  { path: "/tickethandler/tickets", label: "Tickets", icon: "◈" },
+  { path: "/tickethandler/projects", label: "Projects", icon: "◉" },
 ];
 
 const STATUS_COLORS = {
@@ -29,7 +29,7 @@ const TICKET_TYPES = [
   { id: "incident", title: "Incident", desc: "Technical incidents reporting", icon: "⚡" },
 ];
 
-export default function TicketManager() {
+export default function TicketHandler() {
   const navigate = useNavigate();
   const [activeTicket, setActiveTicket] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,16 +41,68 @@ export default function TicketManager() {
     { id: "TKT-004", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27" },
   ]);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [handlerName, setHandlerName] = useState("Ticket Handler");
+  const [handlerEmail, setHandlerEmail] = useState("");
+  const [assignedTicketsCount, setAssignedTicketsCount] = useState(0);
+
+  useEffect(() => {
+    const userEmail = localStorage.getItem("userEmail");
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+      setHandlerName(userName);
+    } else if (userEmail) {
+      setHandlerName(userEmail.split('@')[0]);
+      setHandlerEmail(userEmail);
+    }
+    
+    // Load assigned tickets count
+    loadAssignedTicketsCount();
+  }, []);
+
+  const loadAssignedTicketsCount = () => {
+    const existingTickets = localStorage.getItem("assignedTickets");
+    if (existingTickets) {
+      const tickets = JSON.parse(existingTickets);
+      setAssignedTicketsCount(tickets.length);
+    }
+  };
 
   const handleLogout = () => {
-    // Clear any stored authentication data
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     localStorage.removeItem("rememberedUsername");
     sessionStorage.clear();
-    
-    // Navigate to login page
     navigate("/login");
+  };
+
+  // Save ticket to assigned tickets list
+  const saveTicketToAssignedList = (newTicket) => {
+    const ticketForAssignment = {
+      id: newTicket.id,
+      title: newTicket.summary,
+      project: "New Request",
+      projectIcon: "📝",
+      status: "Open",
+      priority: "Medium",
+      assignedBy: handlerName,
+      assignedDate: new Date().toISOString().split("T")[0],
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+      description: `Ticket submitted by ${handlerName}`,
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+
+    const existingTickets = localStorage.getItem("assignedTickets");
+    let tickets = [];
+    if (existingTickets) {
+      tickets = JSON.parse(existingTickets);
+    }
+    
+    tickets.unshift(ticketForAssignment);
+    localStorage.setItem("assignedTickets", JSON.stringify(tickets));
+    setAssignedTicketsCount(tickets.length);
   };
 
   const handleSubmit = async (e, type) => {
@@ -64,15 +116,19 @@ export default function TicketManager() {
       summary: data.title || data.fullName || data.request || data.requestType || data.softwareName || data.clientName || "New ticket",
       status: "Open",
       date: new Date().toISOString().split("T")[0],
+      submittedBy: handlerName,
     };
 
     try {
-      await apiService.createTicket({ type, ...data });
+      await apiService.createTicket({ type, ...data, submittedBy: handlerName });
       setSubmittedTickets(prev => [newTicket, ...prev]);
-      alert(`Ticket ${newTicket.id} submitted successfully!`);
+      saveTicketToAssignedList(newTicket);
+      alert(`Ticket ${newTicket.id} submitted successfully and assigned to you!`);
       setActiveTicket(null);
     } catch (err) {
       setSubmittedTickets(prev => [newTicket, ...prev]);
+      saveTicketToAssignedList(newTicket);
+      alert(`Ticket ${newTicket.id} submitted successfully and assigned to you!`);
       setActiveTicket(null);
     }
   };
@@ -189,6 +245,10 @@ export default function TicketManager() {
     statusFilter === "All" ? true : t.status === statusFilter
   );
 
+  const getInitials = () => {
+    return handlerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
@@ -228,13 +288,40 @@ export default function TicketManager() {
             <span className="sidebar-icon">≡</span>
             <span>All Tickets</span>
           </button>
+          {/* My Assigned Tickets Button */}
+          <button
+            className="sidebar-link assigned-tickets-btn"
+            onClick={() => navigate("/tickethandler/assigned")}
+            style={{
+              background: "linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1))",
+              borderLeft: "3px solid #8b5cf6",
+              marginTop: "8px"
+            }}
+          >
+            <span className="sidebar-icon">📋</span>
+            <span>My Assigned Tickets</span>
+            {assignedTicketsCount > 0 && (
+              <span className="assigned-badge" style={{
+                marginLeft: "auto",
+                background: "#ef4444",
+                color: "#fff",
+                borderRadius: "20px",
+                padding: "2px 8px",
+                fontSize: "10px",
+                fontWeight: "600"
+              }}>
+                {assignedTicketsCount}
+              </span>
+            )}
+          </button>
         </div>
 
         <div className="sidebar-footer">
-          <div className="sidebar-avatar">AN</div>
+          <div className="sidebar-avatar">{getInitials()}</div>
           <div style={{ flex: 1 }}>
-            <p className="sidebar-user-name">Astghik Naboyan</p>
-            <p className="sidebar-user-role">Admin</p>
+            <p className="sidebar-user-name">{handlerName}</p>
+            <p className="sidebar-user-role">Ticket Handler</p>
+            {handlerEmail && <p className="sidebar-user-email" style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "2px" }}>{handlerEmail}</p>}
           </div>
           {/* Sign Out Button */}
           <button
@@ -382,4 +469,3 @@ export default function TicketManager() {
     </div>
   );
 }
-
