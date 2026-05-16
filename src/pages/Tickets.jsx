@@ -3,9 +3,8 @@ import { Search, X, Plus, Filter, LayoutGrid, Table, User, Calendar, AlertCircle
 import { useNavigate } from "react-router-dom";
 
 const STATUSES = [
-  { id: "Backlog", label: "Backlog", color: "#64748b", bg: "rgba(100, 116, 139, 0.15)", icon: "📋", gradient: "linear-gradient(135deg, #64748b, #475569)" },
-  { id: "To Do", label: "To Do", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.15)", icon: "✏️", gradient: "linear-gradient(135deg, #f59e0b, #d97706)" },
-  { id: "In Progress", label: "In Progress", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.15)", icon: "⚡", gradient: "linear-gradient(135deg, #3b82f6, #2563eb)" },
+  { id: "Open", label: "Open", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.15)", icon: "📋", gradient: "linear-gradient(135deg, #3b82f6, #2563eb)" },
+  { id: "In Progress", label: "In Progress", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.15)", icon: "⚡", gradient: "linear-gradient(135deg, #f59e0b, #d97706)" },
   { id: "Done", label: "Done", color: "#10b981", bg: "rgba(16, 185, 129, 0.15)", icon: "✅", gradient: "linear-gradient(135deg, #10b981, #059669)" }
 ];
 
@@ -16,20 +15,49 @@ const PRIORITIES = {
   Low: { color: "#22c55e", bg: "rgba(34, 197, 94, 0.15)", icon: "🟢", gradient: "linear-gradient(135deg, #22c55e, #16a34a)" }
 };
 
+// Helper function to get assignee avatar
+const getAssigneeAvatar = (name) => {
+  if (!name) return "NA";
+  const parts = name.split(' ');
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
+
+// Helper function to get assignee based on ticket type
+const getAssigneeForType = (type) => {
+  const assignees = {
+    "User Access": "Sarah Chen",
+    "Incident": "Mike Johnson",
+    "Hardware": "Lisa Wong",
+    "Expense": "John Davis"
+  };
+  return assignees[type] || "Support Team";
+};
+
 export default function Tickets() {
   const navigate = useNavigate();
+  
+  // Tickets from TicketManager component
   const [tickets, setTickets] = useState([
-    { id: "TKT-001", title: "New hire onboarding access", status: "Backlog", priority: "High", assignee: "Sarah", assigneeAvatar: "SA", date: "2025-03-20", description: "Need to setup access for new developer joining next week" },
-    { id: "TKT-002", title: "Production server down", status: "In Progress", priority: "Critical", assignee: "Mike", assigneeAvatar: "MK", date: "2025-03-22", description: "API gateway is returning 500 errors" },
-    { id: "TKT-003", title: "Monitor replacement for John", status: "Done", priority: "Medium", assignee: "Lisa", assigneeAvatar: "LS", date: "2025-03-25", description: "Replace broken 24-inch monitor" },
-    { id: "TKT-004", title: "Database optimization", status: "To Do", priority: "High", assignee: "Alex", assigneeAvatar: "AL", date: "2025-03-26", description: "Slow queries affecting performance" },
-    { id: "TKT-005", title: "UI redesign feedback", status: "Backlog", priority: "Low", assignee: "Emma", assigneeAvatar: "EM", date: "2025-03-27", description: "Collect feedback on new design" },
+    { id: "TKT-001", type: "User Access", title: "New hire onboarding access", status: "Open", priority: "High", date: "2025-03-20", assignee: "Sarah Chen", assigneeAvatar: "SC", description: "Need to setup access for new developer joining next week. Please provide necessary permissions and credentials." },
+    { id: "TKT-002", type: "Incident", title: "Production server down", status: "In Progress", priority: "Critical", date: "2025-03-22", assignee: "Mike Johnson", assigneeAvatar: "MJ", description: "API gateway is returning 500 errors. Production environment is experiencing downtime. Immediate attention required." },
+    { id: "TKT-003", type: "Hardware", title: "Monitor replacement for John", status: "Done", priority: "Medium", date: "2025-03-25", assignee: "Lisa Wong", assigneeAvatar: "LW", description: "Replace broken 24-inch monitor for John from the development team." },
+    { id: "TKT-004", type: "Expense", title: "Team dinner reimbursement", status: "Open", priority: "Medium", date: "2025-03-27", assignee: "John Davis", assigneeAvatar: "JD", description: "Team dinner expense reimbursement for the quarterly team building event." },
+    { id: "TKT-005", type: "User Access", title: "Access for AD EXTERNAL groups", status: "Open", priority: "High", date: "2025-03-20", assignee: "Sarah Chen", assigneeAvatar: "SC", description: "Requesting access to AD EXTERNAL groups for the new marketing team members." },
+    { id: "TKT-006", type: "Incident", title: "Internet connection problem", status: "In Progress", priority: "High", date: "2025-03-22", assignee: "Mike Johnson", assigneeAvatar: "MJ", description: "Users reporting intermittent internet connectivity issues. VPN connections dropping frequently." },
+    { id: "TKT-007", type: "Hardware", title: "New monitor request", status: "Done", priority: "Low", date: "2025-03-25", assignee: "Lisa Wong", assigneeAvatar: "LW", description: "Request for a new 27-inch 4K monitor for the design team." },
+    { id: "TKT-008", type: "Expense", title: "Team dinner reimbursement", status: "Open", priority: "Medium", date: "2025-03-27", assignee: "John Davis", assigneeAvatar: "JD", description: "Expense claim for team dinner at the end of project celebration." },
+    { id: "TKT-009", type: "Hardware", title: "Please give me a new notebook", status: "Done", priority: "High", date: "2025-03-25", assignee: "Lisa Wong", assigneeAvatar: "LW", description: "Developer requesting a new MacBook Pro for better performance." },
+    { id: "TKT-010", type: "Expense", title: "Team dinner reimbursement", status: "Open", priority: "Low", date: "2025-03-27", assignee: "John Davis", assigneeAvatar: "JD", description: "Monthly team dinner expense claim for the support team." },
   ]);
 
   const [viewMode, setViewMode] = useState("kanban");
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -39,10 +67,14 @@ export default function Tickets() {
     title: "",
     assignee: "",
     priority: "Medium",
-    status: "Backlog",
+    status: "Open",
+    type: "User Access",
     date: new Date().toISOString().split("T")[0],
     description: ""
   });
+
+  // Ticket types from the original data
+  const ticketTypes = ["User Access", "Incident", "Hardware", "Expense"];
 
   useEffect(() => {
     setAnimation("fade-in");
@@ -53,20 +85,25 @@ export default function Tickets() {
   const filteredTickets = tickets.filter(t => {
     const matchSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        t.assignee.toLowerCase().includes(searchQuery.toLowerCase());
+                        t.assignee.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        t.type.toLowerCase().includes(searchQuery.toLowerCase());
     const matchPriority = priorityFilter === "All" || t.priority === priorityFilter;
     const matchStatus = statusFilter === "All" || t.status === statusFilter;
-    return matchSearch && matchPriority && matchStatus;
+    const matchType = typeFilter === "All" || t.type === typeFilter;
+    return matchSearch && matchPriority && matchStatus && matchType;
   });
 
   const stats = {
     total: tickets.length,
-    backlog: tickets.filter(t => t.status === "Backlog").length,
-    todo: tickets.filter(t => t.status === "To Do").length,
+    open: tickets.filter(t => t.status === "Open").length,
     inProgress: tickets.filter(t => t.status === "In Progress").length,
     done: tickets.filter(t => t.status === "Done").length,
     critical: tickets.filter(t => t.priority === "Critical").length,
     high: tickets.filter(t => t.priority === "High").length,
+    userAccess: tickets.filter(t => t.type === "User Access").length,
+    incident: tickets.filter(t => t.type === "Incident").length,
+    hardware: tickets.filter(t => t.type === "Hardware").length,
+    expense: tickets.filter(t => t.type === "Expense").length,
   };
 
   const handleDragStart = (e, ticketId) => {
@@ -87,9 +124,19 @@ export default function Tickets() {
     e.preventDefault();
     if (!newTicket.title || !newTicket.assignee) return;
     const id = `TKT-${String(tickets.length + 1).padStart(3, "0")}`;
-    const assigneeAvatar = newTicket.assignee.slice(0, 2).toUpperCase();
-    setTickets(prev => [{ id, ...newTicket, assigneeAvatar, description: newTicket.description || "No description" }, ...prev]);
-    setNewTicket({ title: "", assignee: "", priority: "Medium", status: "Backlog", date: new Date().toISOString().split("T")[0], description: "" });
+    const assigneeAvatar = getAssigneeAvatar(newTicket.assignee);
+    setTickets(prev => [{ 
+      id, 
+      type: newTicket.type,
+      title: newTicket.title, 
+      assignee: newTicket.assignee, 
+      assigneeAvatar,
+      priority: newTicket.priority, 
+      status: newTicket.status, 
+      date: newTicket.date, 
+      description: newTicket.description || "No description" 
+    }, ...prev]);
+    setNewTicket({ title: "", assignee: "", priority: "Medium", status: "Open", type: "User Access", date: new Date().toISOString().split("T")[0], description: "" });
     setShowForm(false);
   };
 
@@ -106,9 +153,25 @@ export default function Tickets() {
 
   const getPriorityBadge = (priority) => {
     const p = PRIORITIES[priority];
+    if (!p) return null;
     return (
       <span style={{ background: p.bg, color: p.color, padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px", backdropFilter: "blur(4px)" }}>
         <span>{p.icon}</span> {priority}
+      </span>
+    );
+  };
+
+  const getTypeBadge = (type) => {
+    const typeColors = {
+      "User Access": { bg: "rgba(59,130,246,0.15)", color: "#3b82f6", icon: "👥" },
+      "Incident": { bg: "rgba(239,68,68,0.15)", color: "#ef4444", icon: "⚠️" },
+      "Hardware": { bg: "rgba(139,92,246,0.15)", color: "#8b5cf6", icon: "💻" },
+      "Expense": { bg: "rgba(16,185,129,0.15)", color: "#10b981", icon: "💰" }
+    };
+    const config = typeColors[type] || typeColors["User Access"];
+    return (
+      <span style={{ background: config.bg, color: config.color, padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+        <span>{config.icon}</span> {type}
       </span>
     );
   };
@@ -202,9 +265,9 @@ export default function Tickets() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "16px", marginBottom: "24px" }}>
           {[
             { icon: <CheckCircle size={22} />, label: "Total Tickets", value: stats.total, color: "#3b82f6", bg: "rgba(59,130,246,0.1)" },
-            { icon: <Clock size={22} />, label: "In Progress", value: stats.inProgress, color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
-            { icon: <AlertCircle size={22} />, label: "Critical", value: stats.critical, color: "#ef4444", bg: "rgba(239,68,68,0.1)" },
-            { icon: <CheckCircle size={22} />, label: "Completed", value: stats.done, color: "#10b981", bg: "rgba(16,185,129,0.1)" }
+            { icon: <Clock size={22} />, label: "Open", value: stats.open, color: "#3b82f6", bg: "rgba(59,130,246,0.1)" },
+            { icon: <AlertCircle size={22} />, label: "In Progress", value: stats.inProgress, color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+            { icon: <CheckCircle size={22} />, label: "Done", value: stats.done, color: "#10b981", bg: "rgba(16,185,129,0.1)" }
           ].map((stat, idx) => (
             <div key={idx} style={{
               background: "rgba(255,255,255,0.05)",
@@ -221,6 +284,29 @@ export default function Tickets() {
                 <div style={{ width: "48px", height: "48px", background: stat.bg, borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", color: stat.color }}>{stat.icon}</div>
                 <div><div style={{ fontSize: "28px", fontWeight: "700", color: "#fff" }}>{stat.value}</div><div style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>{stat.label}</div></div>
               </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Type Statistics Row */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "16px" }}>
+          {[
+            { label: "User Access", value: stats.userAccess, icon: "👥", color: "#3b82f6" },
+            { label: "Incident", value: stats.incident, icon: "⚠️", color: "#ef4444" },
+            { label: "Hardware", value: stats.hardware, icon: "💻", color: "#8b5cf6" },
+            { label: "Expense", value: stats.expense, icon: "💰", color: "#10b981" }
+          ].map((type, idx) => (
+            <div key={idx} style={{
+              background: "rgba(255,255,255,0.03)",
+              backdropFilter: "blur(8px)",
+              borderRadius: "16px",
+              padding: "12px",
+              textAlign: "center",
+              border: "1px solid rgba(255,255,255,0.08)"
+            }}>
+              <span style={{ fontSize: "20px", marginRight: "8px" }}>{type.icon}</span>
+              <span style={{ fontSize: "20px", fontWeight: "700", color: type.color }}>{type.value}</span>
+              <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)" }}>{type.label}</div>
             </div>
           ))}
         </div>
@@ -241,7 +327,7 @@ export default function Tickets() {
           <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", background: "rgba(0,0,0,0.3)", padding: "10px 16px", borderRadius: "40px", border: "1px solid rgba(255,255,255,0.1)" }}>
             <Search size={18} style={{ color: "rgba(255,255,255,0.6)" }} />
             <input
-              placeholder="Search by title, ID, or assignee..."
+              placeholder="Search by title, ID, assignee, or type..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontSize: "14px", color: "#fff" }}
@@ -278,8 +364,15 @@ export default function Tickets() {
                 {STATUSES.map(s => <option key={s.id}>{s.id}</option>)}
               </select>
             </div>
-            {(priorityFilter !== "All" || statusFilter !== "All") && (
-              <button onClick={() => { setPriorityFilter("All"); setStatusFilter("All"); }} style={{ padding: "8px 20px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.3)", cursor: "pointer", color: "#fff", alignSelf: "flex-end" }}>Clear Filters</button>
+            <div>
+              <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", marginBottom: "4px", display: "block" }}>Type</label>
+              <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.3)", color: "#fff" }}>
+                <option>All</option>
+                {ticketTypes.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            {(priorityFilter !== "All" || statusFilter !== "All" || typeFilter !== "All") && (
+              <button onClick={() => { setPriorityFilter("All"); setStatusFilter("All"); setTypeFilter("All"); }} style={{ padding: "8px 20px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.3)", cursor: "pointer", color: "#fff", alignSelf: "flex-end" }}>Clear Filters</button>
             )}
           </div>
         )}
@@ -307,14 +400,19 @@ export default function Tickets() {
               <input placeholder="Reporter Name *" value={newTicket.assignee} onChange={e => setNewTicket(prev => ({ ...prev, assignee: e.target.value }))} style={{ padding: "14px 18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", fontSize: "14px", color: "#fff" }} required />
               <textarea placeholder="Description" value={newTicket.description} onChange={e => setNewTicket(prev => ({ ...prev, description: e.target.value }))} rows="3" style={{ padding: "14px 18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", fontSize: "14px", resize: "none", color: "#fff" }} />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <select value={newTicket.type} onChange={e => setNewTicket(prev => ({ ...prev, type: e.target.value }))} style={{ padding: "14px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", color: "#fff" }}>
+                  {ticketTypes.map(t => <option key={t}>{t}</option>)}
+                </select>
                 <select value={newTicket.priority} onChange={e => setNewTicket(prev => ({ ...prev, priority: e.target.value }))} style={{ padding: "14px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", color: "#fff" }}>
                   {Object.keys(PRIORITIES).map(p => <option key={p}>{p}</option>)}
                 </select>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <select value={newTicket.status} onChange={e => setNewTicket(prev => ({ ...prev, status: e.target.value }))} style={{ padding: "14px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", color: "#fff" }}>
                   {STATUSES.map(s => <option key={s.id}>{s.id}</option>)}
                 </select>
+                <input type="date" value={newTicket.date} onChange={e => setNewTicket(prev => ({ ...prev, date: e.target.value }))} style={{ padding: "14px 18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", color: "#fff" }} />
               </div>
-              <input type="date" value={newTicket.date} onChange={e => setNewTicket(prev => ({ ...prev, date: e.target.value }))} style={{ padding: "14px 18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.3)", color: "#fff" }} />
               <button type="submit" style={{ padding: "14px", background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff", borderRadius: "14px", border: "none", cursor: "pointer", fontWeight: "600", fontSize: "14px", marginTop: "8px" }}>Create Ticket</button>
             </div>
           </form>
@@ -323,7 +421,7 @@ export default function Tickets() {
 
       {/* KANBAN VIEW - Glassmorphism */}
       {viewMode === "kanban" && (
-        <div className={animation} style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px", overflowX: "auto", minHeight: "500px", position: "relative", zIndex: 1 }}>
+        <div className={animation} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", overflowX: "auto", minHeight: "500px", position: "relative", zIndex: 1 }}>
           {STATUSES.map(status => (
             <div
               key={status.id}
@@ -350,15 +448,18 @@ export default function Tickets() {
                     onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; }}
                     onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "6px" }}>
                       <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", fontFamily: "monospace" }}>{ticket.id}</span>
+                      {getTypeBadge(ticket.type)}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
                       {getPriorityBadge(ticket.priority)}
                     </div>
                     <h4 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "12px", color: "#fff" }}>{ticket.title}</h4>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <div style={{ width: "30px", height: "30px", background: `linear-gradient(135deg, ${PRIORITIES[ticket.priority]?.color}80, ${PRIORITIES[ticket.priority]?.color}40)`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "600", color: "#fff" }}>{ticket.assigneeAvatar}</div>
-                        <span style={{ fontSize: "12px", color: "#94a3b8" }}>{ticket.assignee}</span>
+                        <span style={{ fontSize: "12px", color: "#94a3b8" }}>{ticket.assignee.split(' ')[0]}</span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#64748b" }}>
                         <Calendar size={12} /> {ticket.date}
@@ -383,6 +484,7 @@ export default function Tickets() {
               <thead>
                 <tr style={{ background: "rgba(0,0,0,0.3)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
                   <th style={{ padding: "16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#94a3b8" }}>ID</th>
+                  <th style={{ padding: "16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#94a3b8" }}>Type</th>
                   <th style={{ padding: "16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#94a3b8" }}>Title</th>
                   <th style={{ padding: "16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#94a3b8" }}>Status</th>
                   <th style={{ padding: "16px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#94a3b8" }}>Priority</th>
@@ -395,6 +497,7 @@ export default function Tickets() {
                 {filteredTickets.map(ticket => (
                   <tr key={ticket.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                     <td style={{ padding: "16px", fontSize: "13px", fontFamily: "monospace", color: "#60a5fa", fontWeight: "500" }}>{ticket.id}</td>
+                    <td style={{ padding: "16px" }}>{getTypeBadge(ticket.type)}</td>
                     <td style={{ padding: "16px", fontSize: "13px", fontWeight: "500", color: "#fff" }}>{ticket.title}</td>
                     <td style={{ padding: "16px" }}>
                       <select value={ticket.status} onChange={(e) => handleUpdateTicket(ticket.id, { status: e.target.value })} style={{ padding: "6px 12px", borderRadius: "10px", border: `1px solid ${STATUSES.find(s => s.id === ticket.status)?.color}`, background: "rgba(0,0,0,0.3)", fontSize: "12px", fontWeight: "500", cursor: "pointer", color: "#fff" }}>
@@ -430,8 +533,11 @@ export default function Tickets() {
       {selectedTicket && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, backdropFilter: "blur(8px)" }} onClick={() => setSelectedTicket(null)}>
           <div style={{ background: "rgba(20,30,50,0.95)", backdropFilter: "blur(20px)", borderRadius: "28px", padding: "32px", maxWidth: "540px", width: "90%", maxHeight: "80vh", overflow: "auto", border: "1px solid rgba(255,255,255,0.15)" }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <span style={{ fontSize: "12px", fontFamily: "monospace", background: "rgba(59,130,246,0.2)", padding: "6px 14px", borderRadius: "20px", color: "#60a5fa" }}>{selectedTicket.id}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <span style={{ fontSize: "12px", fontFamily: "monospace", background: "rgba(59,130,246,0.2)", padding: "6px 14px", borderRadius: "20px", color: "#60a5fa" }}>{selectedTicket.id}</span>
+                {getTypeBadge(selectedTicket.type)}
+              </div>
               <button onClick={() => setSelectedTicket(null)} style={{ background: "rgba(255,255,255,0.1)", border: "none", width: "34px", height: "34px", borderRadius: "10px", cursor: "pointer", color: "#fff" }}><X size={18} /></button>
             </div>
             <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#fff", marginBottom: "16px" }}>{selectedTicket.title}</h2>
@@ -444,7 +550,7 @@ export default function Tickets() {
               <p style={{ fontSize: "14px", color: "#cbd5e1", lineHeight: "1.5" }}>{selectedTicket.description || "No description provided"}</p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px", padding: "16px", background: "rgba(0,0,0,0.3)", borderRadius: "16px" }}>
-              <div><p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px" }}>Assignee</p><p style={{ fontSize: "14px", fontWeight: "500", color: "#fff", display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: "28px", height: "28px", background: "rgba(255,255,255,0.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px" }}>{selectedTicket.assigneeAvatar}</div> {selectedTicket.assignee}</p></div>
+              <div><p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px" }}>Reporter</p><p style={{ fontSize: "14px", fontWeight: "500", color: "#fff", display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: "28px", height: "28px", background: "rgba(255,255,255,0.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px" }}>{selectedTicket.assigneeAvatar}</div> {selectedTicket.assignee}</p></div>
               <div><p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px" }}>Created Date</p><p style={{ fontSize: "14px", fontWeight: "500", color: "#fff" }}>{selectedTicket.date}</p></div>
             </div>
             <div style={{ display: "flex", gap: "12px" }}>

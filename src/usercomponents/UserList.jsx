@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../apiservice/apiService";
-import { Users, Plus, Edit, Trash2, Eye, Search, ArrowLeft, LayoutDashboard, UserPlus, Shield, Mail, Calendar, MoreVertical, RefreshCw, Filter, X, ChevronRight, LogOut } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Eye, Search, ArrowLeft, LayoutDashboard, UserPlus, Shield, Mail, Calendar, MoreVertical, RefreshCw, Filter, X, ChevronRight, LogOut, Ticket, CheckCircle, Clock, AlertCircle, UserCheck } from "lucide-react";
 
 function UserList() {
     const [users, setUsers] = useState([]);
@@ -11,6 +11,14 @@ function UserList() {
     const [roleFilter, setRoleFilter] = useState("All");
     const [showFilters, setShowFilters] = useState(false);
     const [animation, setAnimation] = useState("");
+    const [showTicketsModal, setShowTicketsModal] = useState(false);
+    const [tickets, setTickets] = useState([]);
+    const [ticketsLoading, setTicketsLoading] = useState(false);
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [handlers, setHandlers] = useState([]);
+    const [selectedHandler, setSelectedHandler] = useState("");
+    const [assignLoading, setAssignLoading] = useState(false);
     const navigate = useNavigate();
 
     const getUsers = async () => {
@@ -19,6 +27,8 @@ function UserList() {
             const data = await apiService.getAllUsers();
             setUsers(data);
             setFilteredUsers(data);
+            // Extract handlers AFTER users are loaded
+            extractHandlers(data);
         } catch (error) {
             console.error("Error fetching users:", error);
         } finally {
@@ -27,15 +37,144 @@ function UserList() {
     };
 
     const handleLogout = () => {
-        // Clear all stored authentication data
         localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("userEmail");
         localStorage.removeItem("rememberedUsername");
         localStorage.removeItem("token");
         sessionStorage.clear();
-        
-        // Navigate to login page
         navigate("/login");
+    };
+
+    // Extract only HANDLERS and MANAGERS (not admins or other roles)
+    const extractHandlers = (usersList) => {
+        // Filter ONLY TICKET_HANDLER and TICKET_MANAGER roles
+        // EXCLUDE ADMIN and any other roles
+        const handlersList = usersList.filter(u => 
+            u.userRole === "TICKET_HANDLER" || u.userRole === "TICKET_MANAGER"
+        );
+        setHandlers(handlersList);
+        console.log("Available handlers:", handlersList); // For debugging
+    };
+
+    // Generate sample tickets data (30 tickets from the specified users)
+    const generateSampleTickets = () => {
+        const usersList = [
+            "handler2@gmail.com",
+            "handler1@gmail.com",
+            "manager2@gmail.com",
+            "Astgh.naboyan@gmail.com",
+            "star@gmail.com",
+            "AniKakoyan@gmail.com",
+            "haykgrigoryan@gmail.com",
+            "Arman.Grigoryan@gmail.com",
+            "admin2@gmail.com"
+        ];
+
+        const subjects = [
+            "System Login Issue", "Payment Processing Error", "Account Access Problem",
+            "Data Export Not Working", "UI Bug on Dashboard", "API Integration Failure",
+            "Slow System Performance", "Password Reset Not Working", "Email Not Received",
+            "Report Generation Error", "Mobile App Crash", "Database Connection Issue",
+            "File Upload Failed", "Search Functionality Broken", "Notification Not Sending",
+            "Session Timeout Too Quick", "Wrong Data Displayed", "Feature Request: Export",
+            "Security Vulnerability Found", "Backup Failed", "Sync Issue with Server",
+            "License Activation Problem", "User Role Permission Error", "Two-Factor Auth Issue",
+            "Profile Update Not Saving", "Chat Feature Not Working", "Calendar Sync Failed"
+        ];
+
+        const statuses = ["Open", "In Progress", "Resolved", "Closed", "Pending"];
+        const priorities = ["High", "Medium", "Low"];
+        
+        const ticketsList = [];
+        
+        for (let i = 0; i < 30; i++) {
+            const randomUser = usersList[Math.floor(Math.random() * usersList.length)];
+            const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
+            const createdAt = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+            
+            ticketsList.push({
+                id: i + 1,
+                ticketId: `TKT-${String(i + 1).padStart(4, '0')}`,
+                subject: randomSubject,
+                createdBy: randomUser,
+                createdByName: randomUser.split('@')[0],
+                createdAt: createdAt.toLocaleDateString(),
+                status: randomStatus,
+                priority: randomPriority,
+                description: `This ticket was created by ${randomUser} regarding ${randomSubject.toLowerCase()}. Additional details: The issue occurs intermittently and affects system performance.`,
+                assignedTo: null,
+                assignedToName: null
+            });
+        }
+        
+        return ticketsList;
+    };
+
+    const loadTickets = () => {
+        setTicketsLoading(true);
+        setTimeout(() => {
+            const sampleTickets = generateSampleTickets();
+            setTickets(sampleTickets);
+            setTicketsLoading(false);
+        }, 500);
+    };
+
+    const handleOpenTickets = () => {
+        setShowTicketsModal(true);
+        loadTickets();
+    };
+
+    const handleAssignTicket = (ticket) => {
+        setSelectedTicket(ticket);
+        setSelectedHandler("");
+        setShowAssignModal(true);
+    };
+
+    const handleConfirmAssign = () => {
+        if (!selectedHandler) {
+            alert("Please select a handler to assign this ticket");
+            return;
+        }
+        
+        setAssignLoading(true);
+        
+        // Simulate API call
+        setTimeout(() => {
+            const handlerUser = handlers.find(h => h.id === parseInt(selectedHandler));
+            const handlerName = handlerUser?.username || "Unknown";
+            
+            setTickets(prevTickets => 
+                prevTickets.map(ticket => 
+                    ticket.id === selectedTicket.id 
+                        ? { ...ticket, assignedTo: selectedHandler, assignedToName: handlerName }
+                        : ticket
+                )
+            );
+            
+            setAssignLoading(false);
+            setShowAssignModal(false);
+            setSelectedTicket(null);
+            alert(`Ticket ${selectedTicket.ticketId} assigned successfully to ${handlerName}`);
+        }, 500);
+    };
+
+    const getStatusBadge = (status) => {
+        switch(status) {
+            case "Open": return <span style={{ background: "#fef3c7", color: "#d97706", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}><Clock size={12} style={{ display: "inline", marginRight: "4px" }} /> Open</span>;
+            case "In Progress": return <span style={{ background: "#dbeafe", color: "#2563eb", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}><AlertCircle size={12} style={{ display: "inline", marginRight: "4px" }} /> In Progress</span>;
+            case "Resolved": return <span style={{ background: "#d1fae5", color: "#059669", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}><CheckCircle size={12} style={{ display: "inline", marginRight: "4px" }} /> Resolved</span>;
+            default: return <span style={{ background: "#f3f4f6", color: "#6b7280", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>{status}</span>;
+        }
+    };
+
+    const getPriorityBadge = (priority) => {
+        switch(priority) {
+            case "High": return <span style={{ background: "#fee2e2", color: "#dc2626", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>High</span>;
+            case "Medium": return <span style={{ background: "#fef3c7", color: "#d97706", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>Medium</span>;
+            default: return <span style={{ background: "#e0e7ff", color: "#4f46e5", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>Low</span>;
+        }
     };
 
     useEffect(() => {
@@ -97,6 +236,31 @@ function UserList() {
                         </div>
                     </div>
                     <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                        {/* All Tickets Button */}
+                        <button
+                            onClick={handleOpenTickets}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "12px 24px",
+                                background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                                border: "none",
+                                borderRadius: "12px",
+                                color: "#fff",
+                                cursor: "pointer",
+                                fontWeight: "600",
+                                fontSize: "14px",
+                                transition: "all 0.3s ease",
+                                boxShadow: "0 4px 15px rgba(139,92,246,0.3)"
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 25px rgba(139,92,246,0.4)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 15px rgba(139,92,246,0.3)"; }}
+                        >
+                            <Ticket size={18} />
+                            <span>All Tickets</span>
+                        </button>
+                        
                         {/* Sign Out Button */}
                         <button
                             onClick={handleLogout}
@@ -133,6 +297,7 @@ function UserList() {
                             <LogOut size={18} />
                             <span>Sign Out</span>
                         </button>
+                        
                         {/* Add User Button */}
                         <button
                             onClick={() => navigate("/add-user")}
@@ -226,7 +391,7 @@ function UserList() {
                                     <th style={{ padding: "14px 20px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b" }}>Email</th>
                                     <th style={{ padding: "14px 20px", textAlign: "left", fontSize: "12px", fontWeight: "600", color: "#64748b" }}>Role</th>
                                     <th style={{ padding: "14px 20px", textAlign: "center", fontSize: "12px", fontWeight: "600", color: "#64748b" }}>Actions</th>
-                                </tr>
+                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredUsers.map((user, idx) => (
@@ -259,6 +424,227 @@ function UserList() {
                     </div>
                 )}
             </div>
+
+            {/* Tickets Modal */}
+            {showTicketsModal && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(0,0,0,0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000,
+                    backdropFilter: "blur(4px)"
+                }} onClick={() => setShowTicketsModal(false)}>
+                    <div style={{
+                        background: "#fff",
+                        borderRadius: "24px",
+                        width: "90%",
+                        maxWidth: "1300px",
+                        maxHeight: "85vh",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)"
+                    }} onClick={e => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div style={{
+                            padding: "20px 28px",
+                            borderBottom: "1px solid #e2e8f0",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            background: "linear-gradient(135deg, #f8fafc, #fff)"
+                        }}>
+                            <div>
+                                <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#0a2540", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+                                    <Ticket size={24} style={{ color: "#8b5cf6" }} /> All Support Tickets
+                                </h2>
+                                <p style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>Total {tickets.length} tickets • Created by system users</p>
+                            </div>
+                            <button onClick={() => setShowTicketsModal(false)} style={{
+                                width: "36px",
+                                height: "36px",
+                                borderRadius: "10px",
+                                border: "1px solid #e2e8f0",
+                                background: "#fff",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.2s"
+                            }} onMouseEnter={e => { e.currentTarget.style.background = "#f1f5f9" }}>
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {/* Modal Body - Tickets List */}
+                        <div style={{ flex: 1, overflow: "auto", padding: "20px 24px" }}>
+                            {ticketsLoading ? (
+                                <div style={{ textAlign: "center", padding: "60px", color: "#94a3b8" }}>Loading tickets...</div>
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                    {tickets.map((ticket, idx) => (
+                                        <div key={ticket.id} style={{
+                                            background: "#fff",
+                                            border: "1px solid #e2e8f0",
+                                            borderRadius: "16px",
+                                            padding: "18px 20px",
+                                            transition: "all 0.2s",
+                                            animation: `fadeInRow 0.3s ease-out ${idx * 0.02}s both`
+                                        }} onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)"; e.currentTarget.style.borderColor = "#cbd5e1"; }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "12px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                                                    <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "600", color: "#8b5cf6", background: "#f3e8ff", padding: "4px 12px", borderRadius: "20px" }}>{ticket.ticketId}</span>
+                                                    {getStatusBadge(ticket.status)}
+                                                    {getPriorityBadge(ticket.priority)}
+                                                </div>
+                                                {!ticket.assignedTo ? (
+                                                    <button onClick={() => handleAssignTicket(ticket)} style={{
+                                                        padding: "6px 16px",
+                                                        background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                                                        border: "none",
+                                                        borderRadius: "10px",
+                                                        color: "#fff",
+                                                        cursor: "pointer",
+                                                        fontSize: "12px",
+                                                        fontWeight: "500",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "6px",
+                                                        transition: "all 0.2s"
+                                                    }} onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}>
+                                                        <UserCheck size={14} /> Assign to Handler
+                                                    </button>
+                                                ) : (
+                                                    <span style={{ fontSize: "12px", background: "#d1fae5", color: "#059669", padding: "6px 14px", borderRadius: "20px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                                        <CheckCircle size={14} /> Assigned to: {ticket.assignedToName}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", marginBottom: "8px" }}>{ticket.subject}</h3>
+                                            <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "12px", lineHeight: "1.5" }}>{ticket.description}</p>
+                                            <div style={{ display: "flex", gap: "20px", fontSize: "12px", color: "#94a3b8", borderTop: "1px solid #f1f5f9", paddingTop: "12px", marginTop: "4px" }}>
+                                                <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>👤 Created by: <strong>{ticket.createdBy}</strong></span>
+                                                <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>📅 Created: {ticket.createdAt}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div style={{ padding: "16px 24px", borderTop: "1px solid #e2e8f0", background: "#f8fafc", display: "flex", justifyContent: "flex-end" }}>
+                            <button onClick={() => setShowTicketsModal(false)} style={{
+                                padding: "10px 24px",
+                                background: "#fff",
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                fontSize: "13px",
+                                fontWeight: "500",
+                                color: "#64748b"
+                            }}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Assign Handler Modal - ONLY HANDLERS ARE SHOWN HERE */}
+            {showAssignModal && selectedTicket && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(0,0,0,0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1100,
+                    backdropFilter: "blur(4px)"
+                }} onClick={() => setShowAssignModal(false)}>
+                    <div style={{
+                        background: "#fff",
+                        borderRadius: "20px",
+                        width: "450px",
+                        maxWidth: "90%",
+                        padding: "28px",
+                        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)"
+                    }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                            <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#0a2540", margin: 0 }}>Assign Ticket to Handler</h3>
+                            <button onClick={() => setShowAssignModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8" }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "20px" }}>
+                            Ticket: <strong>{selectedTicket.ticketId}</strong> - {selectedTicket.subject}
+                        </p>
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={{ fontSize: "13px", fontWeight: "600", color: "#1e293b", marginBottom: "8px", display: "block" }}>Select Handler (Only Ticket Handlers & Managers)</label>
+                            <select 
+                                value={selectedHandler} 
+                                onChange={e => setSelectedHandler(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "12px 16px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #e2e8f0",
+                                    fontSize: "14px",
+                                    background: "#fff",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <option value="">-- Select a handler --</option>
+                                {handlers.length === 0 ? (
+                                    <option disabled>No handlers available. Please add TICKET_HANDLER or TICKET_MANAGER users first.</option>
+                                ) : (
+                                    handlers.map(handler => (
+                                        <option key={handler.id} value={handler.id}>
+                                            {handler.username} ({handler.email}) - {handler.userRole === "TICKET_MANAGER" ? "📋 Manager" : "🎫 Handler"}
+                                        </option>
+                                    ))
+                                )}
+                            </select>
+                            {handlers.length === 0 && (
+                                <p style={{ fontSize: "12px", color: "#dc2626", marginTop: "8px" }}>
+                                    ⚠️ No handlers found! Please add users with TICKET_HANDLER or TICKET_MANAGER role first.
+                                </p>
+                            )}
+                        </div>
+                        <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                            <button onClick={() => setShowAssignModal(false)} style={{
+                                padding: "10px 20px",
+                                background: "#fff",
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                fontSize: "13px"
+                            }}>Cancel</button>
+                            <button onClick={handleConfirmAssign} disabled={assignLoading || handlers.length === 0} style={{
+                                padding: "10px 24px",
+                                background: "linear-gradient(135deg, #10b981, #059669)",
+                                border: "none",
+                                borderRadius: "10px",
+                                color: "#fff",
+                                cursor: (assignLoading || handlers.length === 0) ? "not-allowed" : "pointer",
+                                fontSize: "13px",
+                                fontWeight: "500",
+                                opacity: (assignLoading || handlers.length === 0) ? 0.6 : 1
+                            }}>
+                                {assignLoading ? "Assigning..." : "Confirm Assign"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <style>{`
                 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }

@@ -17,7 +17,30 @@ export default function Projects() {
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
   
-  // Spaces data - Based on TicketManager TICKET_TYPES
+  // All tickets from TicketManager
+  const allTicketsList = [
+    { id: "TKT-001", type: "User Access", summary: "New hire onboarding access", status: "Open", date: "2025-03-20", user: "Astghik Naboyan", priority: "High", description: "Need to setup access for new developer" },
+    { id: "TKT-002", type: "Incident", summary: "Production server down", status: "In Progress", date: "2025-03-22", user: "Mike Chen", priority: "Critical", description: "Production server is experiencing downtime" },
+    { id: "TKT-003", type: "Hardware", summary: "Monitor replacement for John", status: "Done", date: "2025-03-25", user: "John Doe", priority: "Medium", description: "Monitor replacement request" },
+    { id: "TKT-004", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27", user: "Sarah Lee", priority: "Medium", description: "Team dinner expense reimbursement" },
+    { id: "TKT-005", type: "User Access", summary: "Access for AD EXTERNAL groups", status: "Open", date: "2025-03-20", user: "Astghik Naboyan", priority: "High", description: "External AD group access request" },
+    { id: "TKT-006", type: "Incident", summary: "Internet connection problem", status: "In Progress", date: "2025-03-22", user: "Mike Chen", priority: "High", description: "Internet connectivity issues" },
+    { id: "TKT-007", type: "Hardware", summary: "New monitor request", status: "Done", date: "2025-03-25", user: "Astghik Naboyan", priority: "Low", description: "Request for new monitor" },
+    { id: "TKT-008", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27", user: "John Doe", priority: "Medium", description: "Dinner expense claim" },
+    { id: "TKT-009", type: "Hardware", summary: "Please give me a new notebook", status: "Done", date: "2025-03-25", user: "Sarah Lee", priority: "High", description: "New laptop request" },
+    { id: "TKT-010", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27", user: "Mike Chen", priority: "Low", description: "Team dinner expense" },
+  ];
+
+  // Helper function to get user avatar
+  const getUserAvatar = (userName) => {
+    const nameParts = userName.split(' ');
+    if (nameParts.length > 1) {
+      return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+    }
+    return userName.slice(0, 2).toUpperCase();
+  };
+
+  // Spaces data with tickets from the list above
   const [spaces, setSpaces] = useState([
     { 
       id: 1,
@@ -27,34 +50,38 @@ export default function Projects() {
       color: "#3b82f6",
       gradient: "linear-gradient(135deg, #3b82f6, #2563eb)",
       bg: "rgba(59, 130, 246, 0.08)",
-      stats: { projects: 2, tickets: 4, completed: 1 },
+      stats: { projects: 2, tickets: 0, completed: 0 },
       projects: [
         { 
           id: 101,
           icon: "👤", 
           name: "User Access Requests", 
-          progress: 65, 
+          progress: 50, 
           status: "In Progress",
           priority: "High",
           deadline: "2025-04-20",
           team: ["Sarah", "Mike"],
-          tickets: [
-            { id: "TKT-001", title: "New hire onboarding access", status: "Open", priority: "High", date: "2025-03-20", user: "Astghik Naboyan", userAvatar: "AN", description: "Need to setup access for new developer" },
-            { id: "TKT-004", title: "Access Review Request", status: "In Progress", priority: "Medium", date: "2025-03-27", user: "John Doe", userAvatar: "JD", description: "Review existing access permissions" },
-          ]
+          tickets: allTicketsList.filter(t => t.type === "User Access").map(t => ({
+            id: t.id,
+            title: t.summary,
+            status: t.status,
+            priority: t.priority,
+            date: t.date,
+            user: t.user,
+            userAvatar: getUserAvatar(t.user),
+            description: t.description
+          }))
         },
         { 
           id: 102,
           icon: "🔄", 
           name: "Role Management", 
-          progress: 40, 
-          status: "In Progress",
+          progress: 30, 
+          status: "Planning",
           priority: "Medium",
           deadline: "2025-05-10",
           team: ["Alex", "Emma"],
-          tickets: [
-            { id: "TKT-002", title: "Role Change Request", status: "Open", priority: "High", date: "2025-03-22", user: "Mike Chen", userAvatar: "MC", description: "Change user role from Editor to Admin" },
-          ]
+          tickets: []
         },
       ]
     },
@@ -66,33 +93,38 @@ export default function Projects() {
       color: "#10b981",
       gradient: "linear-gradient(135deg, #10b981, #059669)",
       bg: "rgba(16, 185, 129, 0.08)",
-      stats: { projects: 2, tickets: 3, completed: 1 },
+      stats: { projects: 2, tickets: 0, completed: 0 },
       projects: [
         { 
           id: 201,
           icon: "💳", 
           name: "Expense Management", 
-          progress: 55, 
+          progress: 45, 
           status: "In Progress",
           priority: "High",
           deadline: "2025-04-25",
           team: ["Lisa", "John"],
-          tickets: [
-            { id: "TKT-003", title: "Expense Reimbursement", status: "Resolved", priority: "Medium", date: "2025-03-25", user: "Astghik Naboyan", userAvatar: "AN", description: "Team dinner reimbursement request" },
-          ]
+          tickets: allTicketsList.filter(t => t.type === "Expense").map(t => ({
+            id: t.id,
+            title: t.summary,
+            status: t.status,
+            priority: t.priority,
+            date: t.date,
+            user: t.user,
+            userAvatar: getUserAvatar(t.user),
+            description: t.description
+          }))
         },
         { 
           id: 202,
           icon: "💰", 
           name: "Payment Inquiries", 
-          progress: 30, 
+          progress: 20, 
           status: "Planning",
           priority: "Medium",
           deadline: "2025-05-15",
           team: ["Emma", "Mike"],
-          tickets: [
-            { id: "TKT-005", title: "Payment Status Inquiry", status: "Open", priority: "Low", date: "2025-03-28", user: "Sarah Lee", userAvatar: "SL", description: "Check payment status for invoice INV-001" },
-          ]
+          tickets: []
         },
       ]
     },
@@ -104,7 +136,7 @@ export default function Projects() {
       color: "#8b5cf6",
       gradient: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
       bg: "rgba(139, 92, 246, 0.08)",
-      stats: { projects: 2, tickets: 4, completed: 2 },
+      stats: { projects: 2, tickets: 0, completed: 0 },
       projects: [
         { 
           id: 301,
@@ -115,23 +147,27 @@ export default function Projects() {
           priority: "High",
           deadline: "2025-04-18",
           team: ["Mike", "Lisa"],
-          tickets: [
-            { id: "TKT-006", title: "Laptop Replacement Request", status: "In Progress", priority: "High", date: "2025-03-26", user: "John Doe", userAvatar: "JD", description: "Need new laptop for developer" },
-            { id: "TKT-007", title: "Monitor Upgrade", status: "Resolved", priority: "Medium", date: "2025-03-29", user: "Astghik Naboyan", userAvatar: "AN", description: "Monitor replacement for John" },
-          ]
+          tickets: allTicketsList.filter(t => t.type === "Hardware").map(t => ({
+            id: t.id,
+            title: t.summary,
+            status: t.status,
+            priority: t.priority,
+            date: t.date,
+            user: t.user,
+            userAvatar: getUserAvatar(t.user),
+            description: t.description
+          }))
         },
         { 
           id: 302,
           icon: "🏢", 
           name: "Facilities & Office", 
-          progress: 45, 
+          progress: 35, 
           status: "Planning",
           priority: "Low",
           deadline: "2025-05-30",
           team: ["Alex", "Emma"],
-          tickets: [
-            { id: "TKT-008", title: "Office Equipment Request", status: "Open", priority: "Low", date: "2025-03-30", user: "Mike Chen", userAvatar: "MC", description: "New desk and chair request" },
-          ]
+          tickets: []
         },
       ]
     },
@@ -143,34 +179,29 @@ export default function Projects() {
       color: "#f59e0b",
       gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
       bg: "rgba(245, 158, 11, 0.08)",
-      stats: { projects: 2, tickets: 3, completed: 0 },
+      stats: { projects: 2, tickets: 0, completed: 0 },
       projects: [
         { 
           id: 401,
           icon: "📦", 
           name: "License Management", 
-          progress: 35, 
-          status: "In Progress",
+          progress: 25, 
+          status: "Planning",
           priority: "High",
           deadline: "2025-04-22",
           team: ["John", "Lisa"],
-          tickets: [
-            { id: "TKT-009", title: "Software License Request", status: "Open", priority: "High", date: "2025-03-27", user: "Astghik Naboyan", userAvatar: "AN", description: "Request for Adobe Creative Cloud license" },
-          ]
+          tickets: []
         },
         { 
           id: 402,
           icon: "📋", 
           name: "Compliance", 
-          progress: 25, 
+          progress: 15, 
           status: "Planning",
           priority: "Medium",
           deadline: "2025-06-01",
           team: ["Emma", "Mike"],
-          tickets: [
-            { id: "TKT-010", title: "Compliance Review", status: "Open", priority: "Medium", date: "2025-03-28", user: "Sarah Lee", userAvatar: "SL", description: "Internal compliance check request" },
-            { id: "TKT-011", title: "GDPR Compliance Check", status: "In Progress", priority: "High", date: "2025-03-29", user: "John Doe", userAvatar: "JD", description: "GDPR compliance verification" },
-          ]
+          tickets: []
         },
       ]
     },
@@ -182,40 +213,68 @@ export default function Projects() {
       color: "#ef4444",
       gradient: "linear-gradient(135deg, #ef4444, #dc2626)",
       bg: "rgba(239, 68, 68, 0.08)",
-      stats: { projects: 2, tickets: 5, completed: 1 },
+      stats: { projects: 2, tickets: 0, completed: 0 },
       projects: [
         { 
           id: 501,
           icon: "📣", 
           name: "Client Complaints", 
-          progress: 50, 
+          progress: 40, 
           status: "In Progress",
           priority: "Critical",
           deadline: "2025-04-12",
           team: ["Mike", "Sarah"],
-          tickets: [
-            { id: "TKT-012", title: "Client Complaint - Service Delay", status: "In Progress", priority: "Critical", date: "2025-03-26", user: "Astghik Naboyan", userAvatar: "AN", description: "Customer complaint about service response time" },
-          ]
+          tickets: []
         },
         { 
           id: 502,
           icon: "⚡", 
           name: "Technical Incidents", 
-          progress: 60, 
+          progress: 55, 
           status: "In Progress",
           priority: "Critical",
           deadline: "2025-04-15",
           team: ["Alex", "John"],
-          tickets: [
-            { id: "TKT-013", title: "Production Server Issue", status: "Open", priority: "Critical", date: "2025-03-22", user: "Mike Chen", userAvatar: "MC", description: "Production server down - urgent fix needed" },
-            { id: "TKT-014", title: "API Performance Issue", status: "Resolved", priority: "High", date: "2025-03-24", user: "Astghik Naboyan", userAvatar: "AN", description: "API gateway returning 500 errors" },
-          ]
+          tickets: allTicketsList.filter(t => t.type === "Incident").map(t => ({
+            id: t.id,
+            title: t.summary,
+            status: t.status,
+            priority: t.priority,
+            date: t.date,
+            user: t.user,
+            userAvatar: getUserAvatar(t.user),
+            description: t.description
+          }))
         },
       ]
     },
   ]);
 
   const [allTickets, setAllTickets] = useState([]);
+
+  // Update space stats based on tickets
+  useEffect(() => {
+    const updatedSpaces = spaces.map(space => {
+      let totalTickets = 0;
+      let completedTickets = 0;
+      
+      space.projects.forEach(project => {
+        totalTickets += project.tickets.length;
+        completedTickets += project.tickets.filter(t => t.status === "Done" || t.status === "Resolved").length;
+      });
+      
+      return {
+        ...space,
+        stats: {
+          projects: space.projects.length,
+          tickets: totalTickets,
+          completed: completedTickets
+        }
+      };
+    });
+    
+    setSpaces(updatedSpaces);
+  }, []);
 
   useEffect(() => {
     setAnimation("fade-in");
@@ -256,9 +315,9 @@ export default function Projects() {
     totalTickets: allTickets.length,
     openTickets: allTickets.filter(t => t.status === "Open").length,
     inProgressTickets: allTickets.filter(t => t.status === "In Progress").length,
-    resolvedTickets: allTickets.filter(t => t.status === "Resolved").length,
+    resolvedTickets: allTickets.filter(t => t.status === "Done" || t.status === "Resolved").length,
     criticalTickets: allTickets.filter(t => t.priority === "Critical").length,
-    completionRate: Math.round((allTickets.filter(t => t.status === "Resolved").length / allTickets.length) * 100) || 0,
+    completionRate: allTickets.length > 0 ? Math.round((allTickets.filter(t => t.status === "Done" || t.status === "Resolved").length / allTickets.length) * 100) : 0,
   };
 
   const getProgressColor = (progress) => {
@@ -280,6 +339,7 @@ export default function Projects() {
     switch(status) {
       case "Open": return { bg: "#dbeafe", color: "#2563eb", dot: "#3b82f6" };
       case "In Progress": return { bg: "#fed7aa", color: "#ea580c", dot: "#f97316" };
+      case "Done":
       case "Resolved": return { bg: "#d1fae5", color: "#059669", dot: "#10b981" };
       default: return { bg: "#f1f5f9", color: "#64748b", dot: "#94a3b8" };
     }
@@ -292,7 +352,7 @@ export default function Projects() {
       Medium: { bg: "#fefce8", color: "#ca8a04", icon: "🟡" },
       Low: { bg: "#f0fdf4", color: "#16a34a", icon: "🟢" }
     };
-    const p = priorities[priority];
+    const p = priorities[priority] || priorities.Medium;
     return (
       <span style={{ background: p.bg, color: p.color, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
         <span>{p.icon}</span> {priority}
@@ -682,7 +742,7 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* Ticket Modal - WITHOUT Create New Ticket button */}
+      {/* Ticket Modal */}
       {showTicketModal && selectedProject && (
         <div style={{
           position: "fixed",
@@ -769,7 +829,7 @@ export default function Projects() {
                     </div>
                     <div style={{ background: "#d1fae5", padding: "10px 20px", borderRadius: "12px", display: "flex", alignItems: "center", gap: "10px" }}>
                       <CheckCircle size={18} color="#10b981" />
-                      <div><strong>{selectedProject.tickets.filter(t => t.status === "Resolved").length}</strong> <span style={{ fontSize: "13px", color: "#64748b" }}>Resolved</span></div>
+                      <div><strong>{selectedProject.tickets.filter(t => t.status === "Done" || t.status === "Resolved").length}</strong> <span style={{ fontSize: "13px", color: "#64748b" }}>Resolved</span></div>
                     </div>
                   </div>
 

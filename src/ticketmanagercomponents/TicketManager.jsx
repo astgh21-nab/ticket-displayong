@@ -39,6 +39,12 @@ export default function TicketManager() {
     { id: "TKT-002", type: "Incident", summary: "Production server down", status: "In Progress", date: "2025-03-22" },
     { id: "TKT-003", type: "Hardware", summary: "Monitor replacement for John", status: "Done", date: "2025-03-25" },
     { id: "TKT-004", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27" },
+    { id: "TKT-005", type: "User Access", summary: "Acces for AD EXTERNAL groups", status: "Open", date: "2025-03-20" },
+    { id: "TKT-006", type: "Incident", summary: "internet connetion problem", status: "In Progress", date: "2025-03-22" }, 
+    { id: "TKT-007", type: "Hardware", summary: "new monitor ", status: "Done", date: "2025-03-25" },
+    { id: "TKT-008", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27" },
+    { id: "TKT-009", type: "Hardware", summary: "please give me a new notebook", status: "Done", date: "2025-03-25" },
+    { id: "TKT-010", type: "Expense", summary: "Team dinner reimbursement", status: "Open", date: "2025-03-27" },
   ]);
   const [statusFilter, setStatusFilter] = useState("All");
 
